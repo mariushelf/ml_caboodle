@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-from sklearn.base import TransformerMixin
+from sklearn.base import TransformerMixin, BaseEstimator
 from sklearn.model_selection import cross_val_score
 from tqdm import tqdm
 
@@ -58,7 +58,7 @@ class ForwardFeatureSelection(TransformerMixin):
 
     def __init__(
         self,
-        model,
+        estimator: BaseEstimator,
         scoring=None,
         cv: int = 5,
         max_features: int = None,
@@ -66,7 +66,7 @@ class ForwardFeatureSelection(TransformerMixin):
         speculative_rounds: int = 0,
         progress_bar: bool = True,
     ):
-        self.model = model
+        self.estimator = estimator
         self.scoring = scoring
         self.cv = cv
         self.max_features = max_features
@@ -80,7 +80,7 @@ class ForwardFeatureSelection(TransformerMixin):
         if len(selected) > 0:
             best_score = np.mean(
                 cross_val_score(
-                    self.model, X[selected], y, scoring=self.scoring, cv=self.cv
+                    self.estimator, X[selected], y, scoring=self.scoring, cv=self.cv
                 )
             )
             self.baseline_ = best_score
@@ -103,7 +103,7 @@ class ForwardFeatureSelection(TransformerMixin):
                 subset = selected + [c]
                 score = np.mean(
                     cross_val_score(
-                        self.model, X[subset], y, scoring=self.scoring, cv=self.cv
+                        self.estimator, X[subset], y, scoring=self.scoring, cv=self.cv
                     )
                 )
                 improvement = score - best_score if np.isfinite(best_score) else score
@@ -128,7 +128,8 @@ class ForwardFeatureSelection(TransformerMixin):
                 best_score = best_candidate_score
                 speculations = 0
             print(
-                f"Selecting {best_candidate}. Improvement: {best_improvement:.3f}; best_score: {best_score:.2f}"
+                f"Selecting {best_candidate}. "
+                f"Improvement: {best_improvement:.3f}; best_score: {best_score:.2f}"
             )
         self.selected_ = selected
         self.selected_extra_ = selected[len(self.warmstart_cols) :]

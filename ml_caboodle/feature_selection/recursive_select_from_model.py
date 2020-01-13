@@ -57,7 +57,7 @@ class RecursiveSelectFromModel(TransformerMixin):
         self.score_delta = score_delta
         self.speculative_rounds = speculative_rounds
 
-    def fit(self, X, y):
+    def fit(self, X: pd.DataFrame, y):
         best_score = float("-inf")
         all_cols = X.columns.tolist()
         selected = all_cols
@@ -104,5 +104,5 @@ class RecursiveSelectFromModel(TransformerMixin):
         self.score_ = score
         self.selected_ = selected
 
-    def transform(self, X, y=None):
+    def transform(self, X: pd.DataFrame, y=None):
         return X[self.selected_]
