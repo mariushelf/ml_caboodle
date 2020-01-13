@@ -76,7 +76,7 @@ class ForwardFeatureSelection(TransformerMixin):
 
     def fit(self, X: pd.DataFrame, y):
         selected = self.warmstart_cols.copy()
-        improvements = []
+        improvements: List[float] = []
         if len(selected) > 0:
             best_score = np.mean(
                 cross_val_score(
@@ -91,7 +91,7 @@ class ForwardFeatureSelection(TransformerMixin):
         speculations = 0
         rounds = 0
         while len(selected) < X.shape[1] and (
-            self.max_features is None or len(selected < self.max_features)
+            self.max_features is None or len(selected) < self.max_features
         ):
             rounds += 1
             print(f"Starting round #{rounds}...")
