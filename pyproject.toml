@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ml_caboodle"
+version = "0.0.1"
+description = "All the stuff that doesn't have another home"
+authors = ["Marius Helf <helfsmarius@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+black = "19.10b0"
+flake8 = "^3.7"
+pytest = "^5.3"
+pre-commit = "^1.20"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
