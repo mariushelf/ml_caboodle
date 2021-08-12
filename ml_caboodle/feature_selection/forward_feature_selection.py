@@ -111,6 +111,10 @@ class ForwardFeatureSelection(TransformerMixin):
                     best_candidate = c
                     best_improvement = improvement
                     best_candidate_score = score
+
+            selected.append(best_candidate)
+            improvements.append(best_improvement)
+
             if best_improvement <= 0:
                 speculations += 1
                 if speculations > self.speculative_rounds:
@@ -122,8 +126,6 @@ class ForwardFeatureSelection(TransformerMixin):
                     break
                 print(f"No improvement. Starting speculative round #{speculations}...")
 
-            selected.append(best_candidate)
-            improvements.append(best_improvement)
             if best_improvement > 0:
                 best_score = best_candidate_score
                 speculations = 0
