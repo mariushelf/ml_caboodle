@@ -12,5 +12,6 @@ test: install
 build:
 	poetry build
 
-#publish: test clean build
-#	poetry run python -mtwine upload dist/* --verbose
+publish: test clean build
+	poetry run python -mtwine upload dist/* --verbose
+
