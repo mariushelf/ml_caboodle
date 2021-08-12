@@ -1,9 +1,11 @@
-from typing import List
+from __future__ import annotations
+
+from typing import List, Iterable
 
 import numpy as np
 import pandas as pd
 from sklearn.base import TransformerMixin, BaseEstimator
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, BaseCrossValidator
 from tqdm import tqdm
 
 
@@ -63,7 +65,7 @@ class ForwardFeatureSelection(TransformerMixin):
         self,
         estimator: BaseEstimator,
         scoring=None,
-        cv: int = 5,
+        cv: int | Iterable[tuple] | BaseCrossValidator = 5,
         max_features: int = None,
         warmstart_cols: List[str] = None,
         speculative_rounds: int = 0,
