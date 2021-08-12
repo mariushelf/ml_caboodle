@@ -5,7 +5,7 @@ from sklearn.model_selection import cross_val_score
 
 
 class RecursiveSelectFromModel(TransformerMixin):
-    """ Recursively select features by training a classifier and dropping the least
+    """Recursively select features by training a classifier and dropping the least
     relevant features (according to ``clf.feature_importances_``), while the performance
     does not significantly decrease after dropping the features.
 

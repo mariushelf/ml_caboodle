@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 
 class ForwardFeatureSelection(TransformerMixin):
-    """ Iteratively build an optimal feature set by starting with an empty or pre-
+    """Iteratively build an optimal feature set by starting with an empty or pre-
     defined feature set and adding new features to it. The algorithm looks as follows:
 
     1. test performance on initial feature set
@@ -137,5 +137,5 @@ class ForwardFeatureSelection(TransformerMixin):
         self.score_ = best_score
 
     def transform(self, X: pd.DataFrame, y=None):
-        """ Return DataFrame that contains exactly the selected features """
+        """Return DataFrame that contains exactly the selected features"""
         return X[self.selected_]
