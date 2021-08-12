@@ -131,10 +131,12 @@ class ForwardFeatureSelection(TransformerMixin):
                 f"Selecting {best_candidate}. "
                 f"Improvement: {best_improvement:.3f}; best_score: {best_score:.2f}"
             )
+            print(f"All selected features now: {selected}.")
         self.selected_ = selected
         self.selected_extra_ = selected[len(self.warmstart_cols) :]
         self.improvements_ = improvements
         self.score_ = best_score
+        return self
 
     def transform(self, X: pd.DataFrame, y=None):
         """Return DataFrame that contains exactly the selected features"""
