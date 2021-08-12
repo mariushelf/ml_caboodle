@@ -42,6 +42,9 @@ class ForwardFeatureSelection(TransformerMixin):
         solution in the next iteration.
     progress_bar:
         whether to show a progress bar in each iteration
+    n_jobs : int
+        number of concurrent jobs. See
+        [sklearn documentation](https://scikit-learn.org/stable/glossary.html#term-n_jobs).
 
     Attributes
     ----------
@@ -65,6 +68,7 @@ class ForwardFeatureSelection(TransformerMixin):
         warmstart_cols: List[str] = None,
         speculative_rounds: int = 0,
         progress_bar: bool = True,
+        n_jobs: int = None,
     ):
         self.estimator = estimator
         self.scoring = scoring
@@ -73,6 +77,7 @@ class ForwardFeatureSelection(TransformerMixin):
         self.warmstart_cols = warmstart_cols if warmstart_cols is not None else []
         self.speculative_rounds = speculative_rounds
         self.progress_bar = progress_bar
+        self.n_jobs = n_jobs
 
     def fit(self, X: pd.DataFrame, y):
         selected = self.warmstart_cols.copy()
@@ -80,7 +85,12 @@ class ForwardFeatureSelection(TransformerMixin):
         if len(selected) > 0:
             best_score = np.mean(
                 cross_val_score(
-                    self.estimator, X[selected], y, scoring=self.scoring, cv=self.cv
+                    self.estimator,
+                    X[selected],
+                    y,
+                    scoring=self.scoring,
+                    cv=self.cv,
+                    n_jobs=self.n_jobs,
                 )
             )
             self.baseline_ = best_score
