@@ -7,6 +7,9 @@ All the stuff that doesn't have another home
 
 # Changelog
 
+## 0.2.1
+* fix: speculative rounds not removed when out of candidates
+
 ## 0.2.0
 * feature: BackwardFeatureElimination
 * various bugfixes
