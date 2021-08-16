@@ -1,1 +1,1 @@
-from .forward_feature_selection import ForwardFeatureSelection
+from .wrapper_feature_selection import WrapperFeatureSelection
