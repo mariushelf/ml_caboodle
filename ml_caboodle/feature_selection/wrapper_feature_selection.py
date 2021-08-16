@@ -108,13 +108,19 @@ class WrapperFeatureSelection(TransformerMixin):
         feature_pool = X.columns.tolist()
         speculations = 0
         for round_idx in count(1):
-            print(f"Starting round #{round_idx}...")
             if speculations:
-                print(f"(speculative round #{speculations})")
+                spec_str = f" (speculative round #{speculations})"
+            else:
+                spec_str = ""
+            print(f"Starting round #{round_idx}{spec_str}...")
 
             candidates = self.make_candidates(feature_pool, selected)
             if not candidates:
                 print("No more candidates. Stopping.")
+                if speculations:
+                    # remove speculatively selected candidates
+                    selected = selected[:-speculations]
+                    improvements = improvements[:-speculations]
                 break
             scores = self._evaluate_candidates(X, y, candidates)
             best_score_in_round = scores[0]["score"]
@@ -130,7 +136,7 @@ class WrapperFeatureSelection(TransformerMixin):
                 if speculations >= self.speculative_rounds:
                     print(f"No improvement for {speculations + 1} rounds. Stopping.")
                     if speculations >= 1:
-                        # remove speculatively selected features
+                        # remove speculatively selected candidates
                         selected = selected[:-speculations]
                         improvements = improvements[:-speculations]
                     break
