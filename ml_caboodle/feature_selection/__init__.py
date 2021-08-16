@@ -1,1 +1,5 @@
-from .wrapper_feature_selection import WrapperFeatureSelection
+from .wrapper_feature_selection import (
+    WrapperFeatureSelection,
+    ForwardFeatureSelection,
+    BackwardFeatureElimination,
+)

@@ -84,9 +84,10 @@ class WrapperFeatureSelection(TransformerMixin):
         self.rounds_ = 0
 
     def fit(self, X: pd.DataFrame, y):
-        selected = [self.warmstart_cols.copy()]
+        selected = []
         improvements: List[float] = []
-        if len(selected) > 0:
+        if self.warmstart_cols:
+            selected = [self.warmstart_cols.copy()]
             best_score = np.mean(
                 cross_val_score(
                     self.estimator,
@@ -105,9 +106,7 @@ class WrapperFeatureSelection(TransformerMixin):
             best_score = self.baseline_
 
         feature_pool = X.columns.tolist()
-        score = np.nan
         speculations = 0
-        selected = []
         for round_idx in count(1):
             print(f"Starting round #{round_idx}...")
             if speculations:
@@ -121,7 +120,11 @@ class WrapperFeatureSelection(TransformerMixin):
             best_score_in_round = scores[0]["score"]
             best_candidate = scores[0]["features"]
 
-            improvement = score - best_score if np.isfinite(best_score) else score
+            improvement = (
+                best_score_in_round - best_score
+                if np.isfinite(best_score)
+                else best_score_in_round
+            )
 
             if improvement <= 0:
                 if speculations >= self.speculative_rounds:
@@ -140,15 +143,18 @@ class WrapperFeatureSelection(TransformerMixin):
                 prev_selected = set(selected[-1])
                 added = set(best_candidate) - prev_selected
                 removed = prev_selected - set(best_candidate)
-                print(f"Adding {added if added else 'nothing'}. ")
-                print(f"Removing {removed if removed else 'nothing'}. ")
-            print(f"Selection now: {selected}.")
+                if added:
+                    print(f"Adding {added}. ")
+                if removed:
+                    print(f"Removing {removed}. ")
+            print(f"Selection now: {best_candidate}.")
             print(f"Improvement: {improvement:.3f}; best_score: {best_score:.2f}")
 
             selected.append(best_candidate)
             improvements.append(improvement)
 
-        self.selected_ = selected
+        self.selected_ = selected[-1]
+        self.candidates_ = selected
         self.improvements_ = improvements
         self.score_ = best_score
         return self
@@ -161,10 +167,9 @@ class WrapperFeatureSelection(TransformerMixin):
     def _evaluate_candidates(self, X, y, candidates) -> list[dict[str, Any]]:
         scores = []
         for c in tqdm(candidates, disable=not self.progress_bar):
-            subset = self.selected_ + [c]
             score = np.mean(
                 cross_val_score(
-                    self.estimator, X[subset], y, scoring=self.scoring, cv=self.cv
+                    self.estimator, X[c], y, scoring=self.scoring, cv=self.cv
                 )
             )
             scores.append({"features": c, "score": score})
@@ -223,5 +228,6 @@ class BackwardFeatureElimination(WrapperFeatureSelection):
             for c in current_selection:
                 candidate = current_selection.copy()
                 candidate.remove(c)
-                candidates.append(candidate)
+                if len(candidate) > 0:
+                    candidates.append(candidate)
             return candidates
